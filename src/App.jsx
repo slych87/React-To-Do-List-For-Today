@@ -23,6 +23,8 @@ class App extends Component {
 
         this.handleEditEvent = this.handleEditEvent.bind(this);
         this.handleSaveEvent = this.handleSaveEvent.bind(this);
+        this.handleRemoveEvent = this.handleRemoveEvent.bind(this);
+        this.handleEditInit = this.handleEditInit.bind(this);
     }
 
     handleEditEvent(val) {
@@ -34,22 +36,53 @@ class App extends Component {
     }
 
     handleSaveEvent() {
-        this.setState(prevState => ({
-            events: [...prevState.events, prevState.editedEvent],
-            editedEvent: {
-                id: 3,
-                name: "",
-                hour: "",
-                minute: ""
+        this.setState(prevState => {
+            const editedEventExists = prevState.events.find(
+                el => el.id === prevState.editedEvent.id
+            );
+
+            let updatedEvents;
+            if (editedEventExists) {
+                updatedEvents = prevState.events.map(el => {
+                    if (el.id === prevState.editedEvent.id) return prevState.editedEvent;
+                    else return el;
+                })
             }
+        });
+        // this.setState(prevState => ({
+        //     events: [...prevState.events, prevState.editedEvent],
+        //     editedEvent: {
+        //         id: 3,
+        //         name: "",
+        //         hour: "",
+        //         minute: ""
+        //     }
+        // }))
+    }
+
+    handleRemoveEvent(id) {
+        this.setState(prevState => ({
+            events: prevState.events.filter(el => el.id !== id)
         }))
     }
 
-    handle
+    handleEditInit(id) {
+        this.setState(prevState => ({
+            editedEvent: { ...prevState.events[id] }
+        }))
+    }
 
     render() {
         const events = this.state.events.map(el => {
-            return <Countdown key={el.id} name={el.name} hour={el.hour} minute={el.minute} />
+            return <Countdown
+                key={el.id}
+                id={el.id}
+                name={el.name}
+                hour={el.hour}
+                minute={el.minute}
+                onRemove={id => this.handleRemoveEvent(id)}
+                onEditInit={id => this.handleEditInit(id)}
+            />
         })
         return (
             <div className="app">
