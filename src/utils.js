@@ -26,3 +26,18 @@ export function isValidMinute(val) {
 export function hourMinuteToSeconds(h, m) {
   return h * 360 + m * 60;
 }
+
+export function secondsToHourMinuteSecond(s) {
+  let seconds = s;
+  const hour = Math.floor(seconds / 3600)
+    .toString()
+    .padStart(2, 0);
+  seconds -= hour * 3600;
+  const minute = Math.floor(seconds / 60).toString().padStart(2, 0);
+  seconds -= minute * 60;
+  seconds = seconds.toString().padStart(2, 0);
+
+
+
+  return `${hour}:${minute}:${seconds}`;
+}

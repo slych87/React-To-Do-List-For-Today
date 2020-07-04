@@ -22,7 +22,7 @@ class App extends Component {
         { id: 0, name: "śniadanie", hour: 7, minute: 0 },
         { id: 1, name: "obiad", hour: 15, minute: 0 },
         { id: 2, name: "kolacja", hour: 19, minute: 0 },
-        { id: 3, name: "bieganie", hour: 23, minute: 0 }
+        { id: 3, name: "bieganie", hour: 23, minute: 0 },
       ],
       editedEvent: { id: uniqid(), name: "", hour: -1, minute: -1 }
     };

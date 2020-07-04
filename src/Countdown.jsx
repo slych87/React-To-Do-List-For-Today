@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { hourMinuteToSeconds } from "./utils.js";
+import { hourMinuteToSeconds, secondsToHourMinuteSecond } from "./utils.js";
 
 import "./Countdown.css";
 import "./../node_modules/semantic-ui-css/semantic.css";
@@ -12,7 +12,7 @@ const Countdown = props => {
 
   const diff = eventInSeconds - nowInSeconds;
 
-  const diffText = diff > 0 ? diff : "tomorrow";
+  const diffText = diff > 0 ? secondsToHourMinuteSecond(diff) : "tomorrow";
 
   return (
     <div className="countdown">
