@@ -8,30 +8,44 @@ import EditEvent from "./EditEvent";
 class App extends Component {
   constructor() {
     super();
-
-
     this.state = {
-
       now: {
         hour: new Date().getHours(),
         minute: new Date().getMinutes(),
         seconds: new Date().getSeconds()
       },
-
-      events: [
-        { id: 0, name: "śniadanie", hour: 7, minute: 0 },
-        { id: 1, name: "obiad", hour: 15, minute: 0 },
-        { id: 2, name: "kolacja", hour: 19, minute: 0 },
-        { id: 3, name: "bieganie", hour: 23, minute: 0 },
-      ],
+      events: [],
       editedEvent: { id: uniqid(), name: "", hour: -1, minute: -1 }
     };
 
+    this.timer = this.timer.bind(this);
     this.handleEditEvent = this.handleEditEvent.bind(this);
     this.handleSaveEvent = this.handleSaveEvent.bind(this);
     this.handleRemoveEvent = this.handleRemoveEvent.bind(this);
     this.handleEditInit = this.handleEditInit.bind(this);
     this.handleEditCancel = this.handleEditCancel.bind(this);
+  }
+
+  timer() {
+    this.setState({
+      now: {
+        hour: new Date().getHours(),
+        minute: new Date().getMinutes(),
+        seconds: new Date().getSeconds()
+      }
+    });
+  }
+
+  componentDidMount() {
+    const storageEvents = JSON.parse(localStorage.getItem("events")) || [];
+    this.setState({ events: storageEvents });
+
+    const intervalId = setInterval(this.timer, 1000);
+    this.setState({ intervalId: intervalId });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.intervalId);
   }
 
   handleEditEvent(val) {
@@ -44,26 +58,30 @@ class App extends Component {
   }
 
   handleSaveEvent() {
-    this.setState(prevState => {
-      const editedEventExists = prevState.events.find(
-        el => el.id === prevState.editedEvent.id
-      );
+    this.setState(
+      prevState => {
+        const editedEventExists = prevState.events.find(
+          el => el.id === prevState.editedEvent.id
+        );
 
-      let updatedEvents;
-      if (editedEventExists) {
-        updatedEvents = prevState.events.map(el => {
-          if (el.id === prevState.editedEvent.id) return prevState.editedEvent;
-          else return el;
-        });
-      } else {
-        updatedEvents = [...prevState.events, prevState.editedEvent];
-      }
+        let updatedEvents;
+        if (editedEventExists) {
+          updatedEvents = prevState.events.map(el => {
+            if (el.id === prevState.editedEvent.id)
+              return prevState.editedEvent;
+            else return el;
+          });
+        } else {
+          updatedEvents = [...prevState.events, prevState.editedEvent];
+        }
 
-      return {
-        events: updatedEvents,
-        editedEvent: { id: uniqid(), name: "", hour: -1, minute: -1 }
-      };
-    });
+        return {
+          events: updatedEvents,
+          editedEvent: { id: uniqid(), name: "", hour: -1, minute: -1 }
+        };
+      },
+      () => localStorage.setItem("events", JSON.stringify(this.state.events))
+    );
 
     // this.setState(prevState => ({
     //   events: [...prevState.events, prevState.editedEvent],
@@ -77,9 +95,12 @@ class App extends Component {
   }
 
   handleRemoveEvent(id) {
-    this.setState(prevState => ({
-      events: prevState.events.filter(el => el.id !== id)
-    }));
+    this.setState(
+      prevState => ({
+        events: prevState.events.filter(el => el.id !== id)
+      }),
+      () => localStorage.setItem("events", JSON.stringify(this.state.events))
+    );
   }
 
   handleEditInit(id) {
